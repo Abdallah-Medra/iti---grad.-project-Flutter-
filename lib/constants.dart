@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const KLocalhost = "192.168.1.8:4000";
+const KLocalhost = "192.168.0.103:4000";
 const KPrimaryColor = Color.fromARGB(255, 251, 176, 59);
 
 class Palette {

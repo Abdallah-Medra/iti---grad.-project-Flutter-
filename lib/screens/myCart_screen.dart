@@ -1,104 +1,87 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-class MyCartScreen extends StatelessWidget {
+import '../constants.dart';
+import '../models/product.dart';
+import '../providers/user_provider.dart';
+
+class MyCartScreen extends StatefulWidget {
   const MyCartScreen({super.key});
 
   @override
+  State<MyCartScreen> createState() => _MyCartScreenState();
+}
+
+class _MyCartScreenState extends State<MyCartScreen> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold();
-    // return Scaffold(
-    // body: Container(
-    //     color: Colors.grey[200],
-    //     width: double.infinity,
-    //     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-    //     child: ListView(
-    //       children: [
-    //         Container(
-    //           padding: EdgeInsets.all(15),
-    //           margin: EdgeInsets.symmetric(vertical: 10),
-    //           decoration: BoxDecoration(
-    //               color: Colors.white,
-    //               border: Border.all(color: Colors.white),
-    //               borderRadius: BorderRadius.all(Radius.circular(20))),
-    //           child: ListView(
-    //             children: [
-    //               Row(
-    //                 children: [
-    //                   Text(
-    //                     "Iphone 12",
-    //                     style:
-    //                         TextStyle(fontSize: 24, color: Colors.grey[600]),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Row(
-    //                 children: [
-    //                   Text(
-    //                     "256 GB - 8 GB RAM",
-    //                     style: TextStyle(fontSize: 14, color: Colors.grey),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Row(
-    //                 children: [
-    //                   Text(
-    //                     "Silver",
-    //                     style: TextStyle(fontSize: 12, color: Colors.grey),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Row(
-    //                 children: [
-    //                   Text(
-    //                     "14,500 EGP",
-    //                     style: TextStyle(fontSize: 16, color: Colors.grey),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                 children: [
-    //                   ElevatedButton(
-    //                     onPressed: () {},
-    //                     style: ElevatedButton.styleFrom(
-    //                         primary: Color.fromARGB(255, 89, 195, 107)),
-    //                     child: Text(
-    //                       "Exchange",
-    //                       style: TextStyle(fontSize: 12),
-    //                     ),
-    //                   ),
-    //                   ElevatedButton(
-    //                     onPressed: () {},
-    //                     style: ElevatedButton.styleFrom(
-    //                         primary: Color.fromARGB(255, 128, 164, 223)),
-    //                     child: Text(
-    //                       "View Offers",
-    //                       style: TextStyle(fontSize: 12),
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //               Row(
-    //                 mainAxisAlignment: MainAxisAlignment.end,
-    //                 children: [
-    //                   ElevatedButton(
-    //                     onPressed: () {},
-    //                     style: ElevatedButton.styleFrom(primary: Colors.red),
-    //                     child: Text(
-    //                       "Remove",
-    //                       style: TextStyle(fontSize: 12),
-    //                     ),
-    //                   ),
-    //                 ],
-    //               )
-    //             ],
-    //           ),
-    //         ),
-    //       ],
-    //     )),
-    // );
+    final userProvider = Provider.of<UserProvider>(context);
+    final currentUser = userProvider.getUser();
+    var userId = Provider.of<UserProvider>(context, listen: false).user.id;
+
+    Future<List<Product>> getData() async {
+      Uri url = Uri.http(KLocalhost, "/user/ads/$userId");
+
+      print(url);
+      try {
+        var response = await http.get(url);
+        var responseBody = jsonDecode(response.body) as List;
+        List<Product> cartList =
+            responseBody.map((p) => Product.fromJson(p)).toList();
+        print(userId);
+        return cartList;
+      } catch (e) {
+        print(e);
+        return [];
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: KPrimaryColor,
+          centerTitle: true,
+          title: Text("My Cart"),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back),
+          )),
+      body: currentUser.id != "id"
+          ? Container(
+              child: FutureBuilder(
+                  initialData: [],
+                  future: getData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                          child: const CircularProgressIndicator.adaptive());
+                    }
+                    if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    } else {
+                      if (snapshot.data!.isEmpty) {
+                        return Center(child: Text('Your wishlist is empty!'));
+                      }
+                      return ListView.builder(
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (context, index) {
+                            var item = snapshot.data![index];
+                            return Container();
+                          });
+                    }
+                  }),
+            )
+          : Center(
+              child: ElevatedButton(
+              child: Text("Login"),
+              onPressed: () {
+                Navigator.pushNamed(context, '/signin');
+              },
+            )),
+    );
   }
 }

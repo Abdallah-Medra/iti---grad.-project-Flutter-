@@ -43,6 +43,16 @@ class _MyAdsScreenState extends State<MyAdsScreen> {
       }
     }
 
+    Future<void> removeFromAds(item) async {
+      Uri url = Uri.http(KLocalhost, "/user/ads/$userId/$item._id");
+
+      await http.delete(url,
+          body: jsonEncode({"title": item}),
+          headers: {"Content-Type": "application/json"});
+      // add item to the list
+      setState(() {});
+    }
+
     return Scaffold(
         appBar: AppBar(
             backgroundColor: KPrimaryColor,
@@ -150,7 +160,9 @@ class _MyAdsScreenState extends State<MyAdsScreen> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      removeFromAds(item);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                         primary: Colors.red),
                                     child: Text(

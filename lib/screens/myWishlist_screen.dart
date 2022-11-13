@@ -84,180 +84,193 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back),
             )),
-        body: Column(
-          children: [
-            TextFormField(
-              controller: wish,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.favorite), hintText: "Item Name"),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      addToWishlist();
-                    },
-                    child: Text("Add"))
-              ],
-            ),
-            Expanded(
-              child: FutureBuilder(
-                  initialData: [],
-                  future: getData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                          child: const CircularProgressIndicator.adaptive());
-                    }
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    } else {
-                      if (snapshot.data!.isEmpty) {
-                        return Center(child: Text('Your wishlist is empty!'));
-                      }
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          await getData();
-                          setState(() {});
-                        },
-                        child: ListView.builder(
-                          itemCount: snapshot.data?.length,
-                          itemBuilder: (context, index) {
-                            var item = snapshot.data![index];
-                            return Container(
-                              padding: EdgeInsets.all(15),
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "$item",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          removeItemFromWishList(item);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.red),
-                                        child: Text(
-                                          "Remove",
-                                          style: TextStyle(fontSize: 12),
+        body: currentUser.id != "id"
+            ? Column(
+                children: [
+                  TextFormField(
+                    controller: wish,
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.favorite),
+                        hintText: "Item Name"),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            addToWishlist();
+                          },
+                          child: Text("Add"))
+                    ],
+                  ),
+                  Expanded(
+                    child: FutureBuilder(
+                        initialData: [],
+                        future: getData(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child:
+                                    const CircularProgressIndicator.adaptive());
+                          }
+                          if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
+                          } else {
+                            if (snapshot.data!.isEmpty) {
+                              return Center(
+                                  child: Text('Your wishlist is empty!'));
+                            }
+                            return RefreshIndicator(
+                              onRefresh: () async {
+                                await getData();
+                                setState(() {});
+                              },
+                              child: ListView.builder(
+                                itemCount: snapshot.data?.length,
+                                itemBuilder: (context, index) {
+                                  var item = snapshot.data![index];
+                                  return Container(
+                                    padding: EdgeInsets.all(15),
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.white),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "$item",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.grey[600]),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                removeItemFromWishList(item);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  primary: Colors.red),
+                                              child: Text(
+                                                "Remove",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
                               ),
                             );
-                          },
-                        ),
-                      );
-                    }
-                  }),
-            ),
-          ],
-        )
-        // body: ListView(
-        //   children: [
-        //     TextFormField(
-        //       controller: wish,
-        //       decoration: InputDecoration(
-        //           prefixIcon: Icon(Icons.favorite), hintText: "Item Name"),
-        //     ),
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: [
-        //         ElevatedButton(
-        //             onPressed: () {
-        //               addToWishlist();
-        //             },
-        //             child: Text("Add"))
-        //       ],
-        //     ),
-        //     Container(
-        //         // color: Colors.grey[900],
-        //         // width: double.infinity,
-        //         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        //         child: FutureBuilder(
-        //             initialData: [],
-        //             future: getData(),
-        //             builder: (context, snapshot) {
-        //               if (snapshot.connectionState == ConnectionState.waiting) {
-        //                 return Center(
-        //                     child: const CircularProgressIndicator.adaptive());
-        //               }
-        //               if (snapshot.hasError) {
-        //                 return Text(snapshot.error.toString());
-        //               } else {
-        //                 if (snapshot.data!.isEmpty) {
-        //                   return Center(child: Text('Your wishlist is empty!'));
-        //                 }
-        //                 return ListView.builder(
-        //                   itemCount: snapshot.data?.length,
-        //                   itemBuilder: (context, index) {
-        //                     var item = ["qweqwe", "ww"][index];
-        //                     return Text("$item");
-        //                     return Container(
-        //                         padding: EdgeInsets.all(15),
-        //                         margin: EdgeInsets.symmetric(vertical: 10),
-        //                         decoration: BoxDecoration(
-        //                             color: Colors.white,
-        //                             border: Border.all(color: Colors.white),
-        //                             borderRadius:
-        //                                 BorderRadius.all(Radius.circular(20))),
-        //                         child: Text("$item")
-        //                         // child: Column(
-        //                         //   children: [
-        //                         //     Row(
-        //                         //       children: [
-        //                         //         Text(
-        //                         //           "$item",
-        //                         //           style: TextStyle(
-        //                         //               fontSize: 20,
-        //                         //               color: Colors.grey[600]),
-        //                         //         ),
-        //                         //       ],
-        //                         //     ),
-        //                         //     Row(
-        //                         //       mainAxisAlignment: MainAxisAlignment.end,
-        //                         //       children: [
-        //                         //         ElevatedButton(
-        //                         //           onPressed: () {},
-        //                         //           style: ElevatedButton.styleFrom(
-        //                         //               primary: Colors.red),
-        //                         //           child: Text(
-        //                         //             "Remove",
-        //                         //             style: TextStyle(fontSize: 12),
-        //                         //           ),
-        //                         //         ),
-        //                         //       ],
-        //                         //     )
-        //                         //   ],
-        //                         // ),
-        //                         );
-        //                   },
-        //                 );
-        //               }
-        //             })),
-        //   ],
+                          }
+                        }),
+                  ),
+                ],
+              )
+            // body: ListView(
+            //   children: [
+            //     TextFormField(
+            //       controller: wish,
+            //       decoration: InputDecoration(
+            //           prefixIcon: Icon(Icons.favorite), hintText: "Item Name"),
+            //     ),
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: [
+            //         ElevatedButton(
+            //             onPressed: () {
+            //               addToWishlist();
+            //             },
+            //             child: Text("Add"))
+            //       ],
+            //     ),
+            //     Container(
+            //         // color: Colors.grey[900],
+            //         // width: double.infinity,
+            //         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            //         child: FutureBuilder(
+            //             initialData: [],
+            //             future: getData(),
+            //             builder: (context, snapshot) {
+            //               if (snapshot.connectionState == ConnectionState.waiting) {
+            //                 return Center(
+            //                     child: const CircularProgressIndicator.adaptive());
+            //               }
+            //               if (snapshot.hasError) {
+            //                 return Text(snapshot.error.toString());
+            //               } else {
+            //                 if (snapshot.data!.isEmpty) {
+            //                   return Center(child: Text('Your wishlist is empty!'));
+            //                 }
+            //                 return ListView.builder(
+            //                   itemCount: snapshot.data?.length,
+            //                   itemBuilder: (context, index) {
+            //                     var item = ["qweqwe", "ww"][index];
+            //                     return Text("$item");
+            //                     return Container(
+            //                         padding: EdgeInsets.all(15),
+            //                         margin: EdgeInsets.symmetric(vertical: 10),
+            //                         decoration: BoxDecoration(
+            //                             color: Colors.white,
+            //                             border: Border.all(color: Colors.white),
+            //                             borderRadius:
+            //                                 BorderRadius.all(Radius.circular(20))),
+            //                         child: Text("$item")
+            //                         // child: Column(
+            //                         //   children: [
+            //                         //     Row(
+            //                         //       children: [
+            //                         //         Text(
+            //                         //           "$item",
+            //                         //           style: TextStyle(
+            //                         //               fontSize: 20,
+            //                         //               color: Colors.grey[600]),
+            //                         //         ),
+            //                         //       ],
+            //                         //     ),
+            //                         //     Row(
+            //                         //       mainAxisAlignment: MainAxisAlignment.end,
+            //                         //       children: [
+            //                         //         ElevatedButton(
+            //                         //           onPressed: () {},
+            //                         //           style: ElevatedButton.styleFrom(
+            //                         //               primary: Colors.red),
+            //                         //           child: Text(
+            //                         //             "Remove",
+            //                         //             style: TextStyle(fontSize: 12),
+            //                         //           ),
+            //                         //         ),
+            //                         //       ],
+            //                         //     )
+            //                         //   ],
+            //                         // ),
+            //                         );
+            //                   },
+            //                 );
+            //               }
+            //             })),
+            //   ],
 
-        // )
+            // )
 
-        );
+            : Center(
+                child: ElevatedButton(
+                child: Text("Login"),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/signin');
+                },
+              )));
   }
 }
