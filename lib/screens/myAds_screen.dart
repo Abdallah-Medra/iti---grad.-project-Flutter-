@@ -43,12 +43,11 @@ class _MyAdsScreenState extends State<MyAdsScreen> {
       }
     }
 
-    Future<void> removeFromAds(item) async {
-      Uri url = Uri.http(KLocalhost, "/user/ads/$userId/$item._id");
+    Future<void> removeFromAds(String adId) async {
+      Uri url = Uri.http(KLocalhost, "/user/ads/$userId/$adId");
 
-      await http.delete(url,
-          body: jsonEncode({"title": item}),
-          headers: {"Content-Type": "application/json"});
+      await http.delete(url);
+
       // add item to the list
       setState(() {});
     }
@@ -83,7 +82,7 @@ class _MyAdsScreenState extends State<MyAdsScreen> {
                     return ListView.builder(
                       itemCount: snapshot.data?.length,
                       itemBuilder: (context, index) {
-                        var item = Dummy_products[index];
+                        var item = snapshot.data![index];
                         return Container(
                           padding: EdgeInsets.all(15),
                           margin: EdgeInsets.symmetric(vertical: 10),
@@ -161,7 +160,7 @@ class _MyAdsScreenState extends State<MyAdsScreen> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      removeFromAds(item);
+                                      removeFromAds(item.id);
                                     },
                                     style: ElevatedButton.styleFrom(
                                         primary: Colors.red),

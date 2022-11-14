@@ -45,7 +45,7 @@ class Product {
   String userId;
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"],
+        id: json["_id"],
         ableToExchange: json["ableToExchange"],
         brand: json["brand"],
         categoryId: json["categoryId"],
@@ -65,7 +65,7 @@ class Product {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "_id": id,
         "ableToExchange": ableToExchange,
         "brand": brand,
         "categoryId": categoryId,
